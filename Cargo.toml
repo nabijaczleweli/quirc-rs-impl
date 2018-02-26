@@ -11,3 +11,11 @@ license = "MIT"
 version = "0.1.0"
 authors = ["nabijaczleweli <nabijaczleweli@gmail.com>"]
 exclude = ["*.enc"]
+
+
+[dependencies]
+libc = "0.2"
+
+
+[lib]
+crate-type = ["dylib"]
