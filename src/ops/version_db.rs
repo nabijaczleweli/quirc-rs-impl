@@ -5,6 +5,7 @@ pub const QUIRC_MAX_VERSION: usize = 40;
 pub const QUIRC_MAX_ALIGNMENT: usize = 7;
 
 
+#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct QuircRsParams {
     /// Small block size
     pub bs: u32,
@@ -14,6 +15,7 @@ pub struct QuircRsParams {
     pub ns: u32,
 }
 
+#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct QuircVersionInfo {
     pub data_bytes: u32,
     pub apat: [u32; QUIRC_MAX_ALIGNMENT],

@@ -1,7 +1,7 @@
 pub mod version_db;
 
-use self::super::ffi::{FfiQuircPoint, FfiQuircCode};
-use self::super::constants::QUIRC_MAX_BITMAP;
+use self::super::ffi::{FfiQuircPoint, FfiQuircCode, FfiQuircData};
+use self::super::constants::{QUIRC_MAX_PAYLOAD, QUIRC_MAX_BITMAP};
 use std::{hash, cmp, fmt, u16};
 
 
@@ -104,6 +104,104 @@ impl hash::Hash for QuircCode {
 }
 
 
+/// This structure is used to return information about detected QR codes
+/// in the input image.
+#[derive(Copy, Clone)]
+pub struct QuircData {
+    /// Various parameters of the QR-code. These can mostly be
+    /// ignored if you only care about the data.
+    pub version: u32,
+    pub ecc_level: u8,
+    pub mask: u8,
+
+    /// This field is the highest-valued data type found in the QR
+    /// code.
+    pub data_type: u8,
+
+    /// Data payload. For the Kanji datatype, payload is encoded as
+    /// Shift-JIS. For all other datatypes, payload is ASCII text.
+    pub payload: [u8; QUIRC_MAX_PAYLOAD],
+    pub payload_len: usize,
+
+    /// ECI assignment number
+    pub eci: u32,
+}
+
+impl From<FfiQuircData> for QuircData {
+    fn from(data: FfiQuircData) -> QuircData {
+        QuircData {
+            version: data.version as u32,
+            ecc_level: data.ecc_level as u8,
+            mask: data.mask as u8,
+            data_type: data.data_type as u8,
+            payload: data.payload,
+            payload_len: data.payload_len as usize,
+            eci: data.eci,
+        }
+    }
+}
+
+impl fmt::Debug for QuircData {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        f.debug_struct("QuircData")
+            .field("version", &self.version)
+            .field("ecc_level", &self.ecc_level)
+            .field("mask", &self.mask)
+            .field("data_type", &self.data_type)
+            .field("payload", &&self.payload[..])
+            .field("payload_len", &self.payload_len)
+            .field("eci", &self.eci)
+            .finish()
+    }
+}
+
+impl cmp::PartialEq for QuircData {
+    fn eq(&self, other: &QuircData) -> bool {
+        self.version == other.version &&          // align
+        self.ecc_level == other.ecc_level &&      // align
+        self.mask == other.mask &&                // align
+        self.data_type == other.data_type &&      // align
+        self.payload[..] == other.payload[..] &&  // align
+        self.payload_len == other.payload_len &&  // align
+        self.eci == other.eci &&                  // align
+        true
+    }
+}
+
+impl cmp::Eq for QuircData {}
+
+impl cmp::Ord for QuircData {
+    fn cmp(&self, other: &QuircData) -> cmp::Ordering {
+        self.version
+            .cmp(&other.version)
+            .then(self.ecc_level.cmp(&other.ecc_level))
+            .then(self.mask.cmp(&other.mask))
+            .then(self.data_type.cmp(&other.data_type))
+            .then(self.payload[..].cmp(&other.payload))
+            .then(self.payload_len.cmp(&other.payload_len))
+            .then(self.eci.cmp(&other.eci))
+    }
+}
+
+impl cmp::PartialOrd for QuircData {
+    fn partial_cmp(&self, other: &QuircData) -> Option<cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl hash::Hash for QuircData {
+    fn hash<H: hash::Hasher>(&self, state: &mut H) {
+        self.version.hash(state);
+        self.ecc_level.hash(state);
+        self.mask.hash(state);
+        self.data_type.hash(state);
+        self.payload.hash(state);
+        self.payload_len.hash(state);
+        self.eci.hash(state);
+    }
+}
+
+
 
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct QuircRegion {
@@ -164,6 +262,7 @@ pub struct Quirc {
 }
 
 impl Quirc {
+    /// Construct a new QR-code recognizer.
     pub fn new() -> Quirc {
         const NULL_POINT: QuircPoint = QuircPoint { x: 0, y: 0 };
 
@@ -210,6 +309,8 @@ impl Quirc {
         }
     }
 
+    /// Resize the QR-code recognizer. The size of an image must be
+    /// specified before codes can be analyzed.
     pub fn resize(&mut self, to_w: usize, to_h: usize) {
         self.w = to_w;
         self.h = to_h;
@@ -218,11 +319,13 @@ impl Quirc {
         self.row_average = vec![0u64; to_w];
     }
 
+    /// Return the number of QR-codes identified in the last processed image.
     #[inline(always)]
     pub fn count(&self) -> usize {
         self.num_grids
     }
 
+    /// Get the specified width and height of the QR code.
     #[inline(always)]
     pub fn size(&self) -> (usize, usize) {
         (self.w, self.h)

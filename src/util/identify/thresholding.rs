@@ -803,6 +803,9 @@ impl Quirc {
         }
     }
 
+    /// These functions are used to process images for QR-code recognition –
+    /// `begin()` be called first to obtain access to a buffer into
+    /// which the input image should be placed.
     pub fn begin(&mut self) -> &mut [u8] {
         self.num_regions = QUIRC_PIXEL_REGION as usize;
         self.num_capstones = 0;
@@ -811,6 +814,8 @@ impl Quirc {
         return &mut self.image;
     }
 
+    /// After filling the buffer, `end()` should be called to process
+    /// the image for QR-code recognition.
     pub fn end(&mut self) {
         self.pixels_setup();
         self.threshold();
@@ -824,6 +829,7 @@ impl Quirc {
         }
     }
 
+    /// Extract the QR-code specified by the given index
     pub fn extract(&self, index: usize) -> Option<QuircCode> {
         if index > self.num_grids {
             return None;

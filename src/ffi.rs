@@ -1,5 +1,5 @@
 use self::super::constants::{QUIRC_MAX_PAYLOAD, QUIRC_MAX_BITMAP};
-use self::super::ops::{QuircPoint, QuircCode, Quirc};
+use self::super::ops::{QuircPoint, QuircCode, QuircData, Quirc};
 use std::boxed::Box;
 use libc::c_int;
 use std::ptr;
@@ -100,10 +100,24 @@ pub struct FfiQuircData {
     pub eci: u32,
 }
 
+impl From<QuircData> for FfiQuircData {
+    fn from(data: QuircData) -> FfiQuircData {
+        FfiQuircData {
+            version: data.version as c_int,
+            ecc_level: data.ecc_level as c_int,
+            mask: data.mask as c_int,
+            data_type: data.data_type as c_int,
+            payload: data.payload,
+            payload_len: data.payload_len as c_int,
+            eci: data.eci,
+        }
+    }
+}
+
 
 /// This enum describes the various decoder errors which may occur.
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub enum QuircDecodeError {
     QuircSuccess = 0,
     QuircErrorInvalidGridSize,
@@ -148,13 +162,9 @@ pub unsafe extern "C" fn quirc_resize(whom: *mut FfiQuirc, w: c_int, h: c_int) -
 }
 
 /// These functions are used to process images for QR-code recognition.
-/// quirc_begin() must first be called to obtain access to a buffer into
+/// `quirc_begin()` must first be called to obtain access to a buffer into
 /// which the input image should be placed. Optionally, the current
 /// width and height may be returned.
-///
-/// After filling the buffer, quirc_end() should be called to process
-/// the image for QR-code recognition. The locations and content of each
-/// code may be obtained using accessor functions described below.
 #[no_mangle]
 pub unsafe extern "C" fn quirc_begin(whom: *mut FfiQuirc, out_w: *mut c_int, out_h: *mut c_int) -> *mut u8 {
     if !out_w.is_null() || !out_h.is_null() {
@@ -171,6 +181,9 @@ pub unsafe extern "C" fn quirc_begin(whom: *mut FfiQuirc, out_w: *mut c_int, out
     (*((*whom).inner)).begin().as_mut_ptr()
 }
 
+/// After filling the buffer, `quirc_end()` should be called to process
+/// the image for QR-code recognition. The locations and content of each
+/// code may be obtained using accessor functions described below.
 #[no_mangle]
 pub unsafe extern "C" fn quirc_end(whom: *mut FfiQuirc) {
     (*((*whom).inner)).end()
@@ -215,7 +228,21 @@ pub unsafe extern "C" fn quirc_extract(from_whom: *const FfiQuirc, index: c_int,
 /// Decode a QR-code, returning the payload data.
 #[no_mangle]
 pub unsafe extern "C" fn quirc_decode(code: *const FfiQuircCode, data: *mut FfiQuircData) -> QuircDecodeError {
-    let _ = code;
-    let _ = data;
-    QuircDecodeError::QuircSuccess
+    let mut out_data = QuircData {
+        version: 0,
+        ecc_level: 0,
+        mask: 0,
+
+        data_type: 0,
+
+        payload: [0u8; QUIRC_MAX_PAYLOAD],
+        payload_len: 0,
+
+        eci: 0,
+    };
+
+    let err = QuircCode::from(*code).decode(&mut out_data);
+    *data = out_data.into();
+
+    err
 }
