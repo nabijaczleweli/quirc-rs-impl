@@ -1,87 +1,166 @@
 pub mod version_db;
 
-use self::super::ffi::FfiQuircPoint;
-use std::{cmp, fmt, u16};
+use self::super::ffi::{FfiQuircPoint, FfiQuircCode};
+use self::super::constants::QUIRC_MAX_BITMAP;
+use std::{hash, cmp, fmt, u16};
 
 
-const QUIRC_MAX_REGIONS: usize = 256;
-const QUIRC_MAX_CAPSTONES: usize = 32;
-const QUIRC_MAX_GRIDS: usize = 8;
-const QUIRC_PERSPECTIVE_PARAMS: usize = 8;
+pub(crate) const QUIRC_MAX_REGIONS: usize = 256;
+pub(crate) const QUIRC_MAX_CAPSTONES: usize = 32;
+pub(crate) const QUIRC_MAX_GRIDS: usize = 8;
+pub(crate) const QUIRC_PERSPECTIVE_PARAMS: usize = 8;
 
 
 /// This structure describes a location in the input image buffer.
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct QuircPoint {
-    x: usize,
-    y: usize,
+    pub x: isize,
+    pub y: isize,
 }
 
 impl From<FfiQuircPoint> for QuircPoint {
     fn from(code: FfiQuircPoint) -> QuircPoint {
         QuircPoint {
-            x: code.x as usize,
-            y: code.y as usize,
+            x: code.x as isize,
+            y: code.y as isize,
         }
     }
 }
 
 
+/// This structure is used to return information about detected QR codes
+/// in the input image.
+#[derive(Copy, Clone)]
+pub struct QuircCode {
+    /// The four corners of the QR-code, from top left, clockwise
+    pub corners: [QuircPoint; 4],
+
+    /// The number of cells across in the QR-code.
+    pub size: u32,
+    /// The cell bitmap is a bitmask giving the actual values of cells.
+    ///
+    /// If the cell at (x, y) is black, then the following bit is set:
+    ///
+    /// ```c
+    /// cell_bitmap[i >> 3] & (1 << (i & 7))
+    /// ```
+    ///
+    /// where `i = (y * size) + x`.
+    pub cell_bitmap: [u8; QUIRC_MAX_BITMAP],
+}
+
+impl From<FfiQuircCode> for QuircCode {
+    fn from(code: FfiQuircCode) -> QuircCode {
+        QuircCode {
+            corners: [code.corners[0].into(), code.corners[1].into(), code.corners[2].into(), code.corners[3].into()],
+            size: code.size as u32,
+            cell_bitmap: code.cell_bitmap,
+        }
+    }
+}
+
+impl fmt::Debug for QuircCode {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        f.debug_struct("QuircCode")
+            .field("corners", &&self.corners[..])
+            .field("size", &self.size)
+            .field("cell_bitmap", &&self.cell_bitmap[..])
+            .finish()
+    }
+}
+
+impl cmp::PartialEq for QuircCode {
+    fn eq(&self, other: &QuircCode) -> bool {
+        self.corners == other.corners &&                  // align
+        self.size == other.size &&                        // align
+        self.cell_bitmap[..] == other.cell_bitmap[..] &&  // align
+        true
+    }
+}
+
+impl cmp::Eq for QuircCode {}
+
+impl cmp::Ord for QuircCode {
+    fn cmp(&self, other: &QuircCode) -> cmp::Ordering {
+        self.corners[..]
+            .cmp(&other.corners)
+            .then(self.size.cmp(&other.size))
+            .then(self.cell_bitmap.cmp(&other.cell_bitmap))
+    }
+}
+
+impl cmp::PartialOrd for QuircCode {
+    fn partial_cmp(&self, other: &QuircCode) -> Option<cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl hash::Hash for QuircCode {
+    fn hash<H: hash::Hasher>(&self, state: &mut H) {
+        self.corners.hash(state);
+        self.size.hash(state);
+        self.cell_bitmap.hash(state);
+    }
+}
+
+
+
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct QuircRegion {
-    seed: QuircPoint,
-    count: u32,
-    capstone: u32,
+    pub seed: QuircPoint,
+    pub count: u32,
+    pub capstone: i32,
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, PartialOrd)]
 pub struct QuircCapstone {
-    ring: u32,
-    stone: u32,
+    pub ring: u32,
+    pub stone: u32,
 
-    corners: [QuircPoint; 4],
-    center: QuircPoint,
-    c: [f64; QUIRC_PERSPECTIVE_PARAMS],
+    pub corners: [QuircPoint; 4],
+    pub center: QuircPoint,
+    pub c: [f64; QUIRC_PERSPECTIVE_PARAMS],
 
-    qr_grid: u32,
+    pub qr_grid: i32,
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, PartialOrd)]
 pub struct QuircGrid {
-    /* Capstone indices */
-    caps: [u32; 3],
+    /// Capstone indices
+    pub caps: [u32; 3],
 
-    /* Alignment pattern region and corner */
-    align_region: u32,
-    align: QuircPoint,
+    /// Alignment pattern region and corner
+    pub align_region: i32,
+    pub align: QuircPoint,
 
-    /* Timing pattern endpoints */
-    tpep: [QuircPoint; 3],
-    hscan: u32,
-    vscan: u32,
+    /// Timing pattern endpoints
+    pub tpep: [QuircPoint; 3],
+    pub hscan: i32,
+    pub vscan: i32,
 
-    /* Grid size and perspective transform */
-    grid_size: u32,
-    c: [f64; QUIRC_PERSPECTIVE_PARAMS],
+    /// Grid size and perspective transform
+    pub grid_size: u32,
+    pub c: [f64; QUIRC_PERSPECTIVE_PARAMS],
 }
 
 
 #[derive(Clone)]
 pub struct Quirc {
-    image: Vec<u8>,
-    pixels: Vec<u16>,
-    row_average: Vec<u64>, // used by threshold()
-    w: usize,
-    h: usize,
+    pub(crate) image: Vec<u8>,
+    pub(crate) pixels: Vec<u16>,
+    /// used by threshold()
+    pub(crate) row_average: Vec<u64>,
+    pub(crate) w: usize,
+    pub(crate) h: usize,
 
-    num_regions: usize,
-    regions: [QuircRegion; QUIRC_MAX_REGIONS],
+    pub(crate) num_regions: usize,
+    pub(crate) regions: [QuircRegion; QUIRC_MAX_REGIONS],
 
-    num_capstones: usize,
-    capstones: [QuircCapstone; QUIRC_MAX_CAPSTONES],
+    pub(crate) num_capstones: usize,
+    pub(crate) capstones: [QuircCapstone; QUIRC_MAX_CAPSTONES],
 
-    num_grids: usize,
-    grids: [QuircGrid; QUIRC_MAX_GRIDS],
+    pub(crate) num_grids: usize,
+    pub(crate) grids: [QuircGrid; QUIRC_MAX_GRIDS],
 }
 
 impl Quirc {

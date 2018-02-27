@@ -1,5 +1,5 @@
 use self::super::constants::{QUIRC_MAX_PAYLOAD, QUIRC_MAX_BITMAP};
-use self::super::ops::Quirc;
+use self::super::ops::{QuircPoint, QuircCode, Quirc};
 use std::boxed::Box;
 use libc::c_int;
 use std::ptr;
@@ -29,28 +29,54 @@ impl Drop for FfiQuirc {
 
 /// This structure describes a location in the input image buffer.
 #[repr(C)]
+#[derive(Copy, Clone)]
 pub struct FfiQuircPoint {
     pub x: c_int,
     pub y: c_int,
 }
 
+impl From<QuircPoint> for FfiQuircPoint {
+    fn from(code: QuircPoint) -> FfiQuircPoint {
+        FfiQuircPoint {
+            x: code.x as c_int,
+            y: code.y as c_int,
+        }
+    }
+}
+
+
 /// This structure is used to return information about detected QR codes
-/// in the input image.
+/// in the input image — FFI.
 #[repr(C)]
+#[derive(Copy, Clone)]
 pub struct FfiQuircCode {
     /// The four corners of the QR-code, from top left, clockwise
     pub corners: [FfiQuircPoint; 4],
 
-    /// The number of cells across in the QR-code. The cell bitmap
-    /// is a bitmask giving the actual values of cells. If the cell
-    /// at (x, y) is black, then the following bit is set:
-    ///
-    ///     cell_bitmap[i >> 3] & (1 << (i & 7))
-    ///
-    /// where i = (y * size) + x.
+    /// The number of cells across in the QR-code.
     pub size: c_int,
+    /// The cell bitmap is a bitmask giving the actual values of cells.
+    ///
+    /// If the cell at (x, y) is black, then the following bit is set:
+    ///
+    /// ```c
+    /// cell_bitmap[i >> 3] & (1 << (i & 7))
+    /// ```
+    ///
+    /// where `i = (y * size) + x`.
     pub cell_bitmap: [u8; QUIRC_MAX_BITMAP],
 }
+
+impl From<QuircCode> for FfiQuircCode {
+    fn from(code: QuircCode) -> FfiQuircCode {
+        FfiQuircCode {
+            corners: [code.corners[0].into(), code.corners[1].into(), code.corners[2].into(), code.corners[3].into()],
+            size: code.size as c_int,
+            cell_bitmap: code.cell_bitmap,
+        }
+    }
+}
+
 
 /// This structure holds the decoded QR-code data
 #[repr(C)]
@@ -142,12 +168,12 @@ pub unsafe extern "C" fn quirc_begin(whom: *mut FfiQuirc, out_w: *mut c_int, out
         }
     }
 
-    ptr::null_mut()
+    (*((*whom).inner)).begin().as_mut_ptr()
 }
 
 #[no_mangle]
-pub extern "C" fn quirc_end(whom: *mut FfiQuirc) {
-    let _ = whom;
+pub unsafe extern "C" fn quirc_end(whom: *mut FfiQuirc) {
+    (*((*whom).inner)).end()
 }
 
 /// Return a string error message for an error code.
@@ -177,9 +203,13 @@ pub unsafe extern "C" fn quirc_count(in_whom: *const FfiQuirc) -> c_int {
 /// Extract the QR-code specified by the given index.
 #[no_mangle]
 pub unsafe extern "C" fn quirc_extract(from_whom: *const FfiQuirc, index: c_int, code: *mut FfiQuircCode) {
-    let _ = from_whom;
-    let _ = index;
-    let _ = code;
+    if index < 0 {
+        return;
+    }
+
+    if let Some(out) = (*((*from_whom).inner)).extract(index as usize) {
+        *code = out.into();
+    }
 }
 
 /// Decode a QR-code, returning the payload data.
