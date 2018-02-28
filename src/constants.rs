@@ -1,3 +1,6 @@
+//! Various constants from the standard and defining library functionality.
+
+
 /// Limits on the maximum size of QR-codes and their content.
 pub const QUIRC_MAX_BITMAP: usize = 3917;
 pub const QUIRC_MAX_PAYLOAD: usize = 8896;

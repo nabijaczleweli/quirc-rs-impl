@@ -24,11 +24,10 @@ impl Quirc {
         let mut avg_u = 0usize;
         let mut threshold_s = self.w / THRESHOLD_S_DEN;
 
-        /* Ensure a sane, non-zero value for threshold_s.
-         *
-         * threshold_s can be zero if the image width is small. We need to avoid
-         * SIGFPE as it will be used as divisor.
-         * */
+        // Ensure a sane, non-zero value for threshold_s.
+        //
+        // threshold_s can be zero if the image width is small. We need to avoid
+        // SIGFPE as it will be used as divisor.
         threshold_s = threshold_s.max(THRESHOLD_S_MIN);
 
         for y in 0..self.h {

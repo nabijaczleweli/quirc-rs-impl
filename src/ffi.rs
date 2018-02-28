@@ -5,6 +5,7 @@ use libc::c_int;
 use std::ptr;
 
 
+/// Version of `Quirc` for FFI consumption.
 #[repr(C)]
 pub struct FfiQuirc {
     inner: *mut Quirc,

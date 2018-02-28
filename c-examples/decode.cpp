@@ -21,20 +21,28 @@
 
 
 #include "quirc.h"
+#include "dbgutil.h"
 #include <iostream>
 
 
 int main() {
-	std::cerr << "Version: " << quirc_version() << "\n";
-
 	auto ctx = quirc_new();
-	std::cerr << "ctx=" << ctx << "\n";
-	std::cerr << "resize: " << quirc_resize(ctx, 1280, 720) << "\n";
 
-	int w = 0;
-	int h = 0;
-	std::cerr << "begin: " << static_cast<void *>(quirc_begin(ctx, &w, &h)) << "\n";
-	std::cerr << "(w,h)=(" << w << ',' << h << ")\n";
+	load_jpeg(ctx, "a.jpg");
+	quirc_end(ctx);
+
+	std::cerr << "Count: " << (int)quirc_count(ctx) << '\n';
+
+	quirc_code code{};
+	std::cerr << "Extract: " << (int)quirc_extract(ctx, 0, &code) << '\n';
+
+	std::cerr << "Code len: " << code.size << '\n';
+
+	quirc_data data{};
+	std::cerr << "Extract: " << (int)quirc_decode(&code, &data) << '\n';
+
+	std::cerr << "Data len: " << data.payload_len << '\n';
+	std::cerr << "Data: " << data.payload << '\n';
 
 	quirc_destroy(ctx);
 }
