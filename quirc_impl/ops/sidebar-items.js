@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["version_db","QR-code version information database"]],"struct":[["Quirc",""],["QuircCapstone",""],["QuircGrid",""],["QuircPoint","This structure describes a location in the input image buffer."],["QuircRegion",""]]});

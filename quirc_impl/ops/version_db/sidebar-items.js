@@ -1,0 +1,1 @@
+initSidebarItems({"constant":[["QUIRC_MAX_ALIGNMENT",""],["QUIRC_MAX_VERSION",""]],"static":[["QUIRC_VERSION_DB",""]],"struct":[["QuircRsParams",""],["QuircVersionInfo",""]]});
