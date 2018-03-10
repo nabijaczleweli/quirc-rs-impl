@@ -292,6 +292,7 @@
 <span id="246">246</span>
 <span id="247">247</span>
 <span id="248">248</span>
+<span id="249">249</span>
 </pre><pre class="rust ">
 <span class="kw">use</span> <span class="self">self</span>::<span class="kw">super</span>::<span class="ident">constants</span>::{<span class="ident">QUIRC_MAX_PAYLOAD</span>, <span class="ident">QUIRC_MAX_BITMAP</span>};
 <span class="kw">use</span> <span class="self">self</span>::<span class="kw">super</span>::<span class="ident">ops</span>::{<span class="ident">QuircPoint</span>, <span class="ident">QuircCode</span>, <span class="ident">QuircData</span>, <span class="ident">Quirc</span>};
@@ -300,6 +301,7 @@
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ptr</span>;
 
 
+<span class="doccomment">/// Version of `Quirc` for FFI consumption.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FfiQuirc</span> {
     <span class="ident">inner</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">Quirc</span>,

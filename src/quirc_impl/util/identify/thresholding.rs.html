@@ -945,7 +945,6 @@
 <span id="899">899</span>
 <span id="900">900</span>
 <span id="901">901</span>
-<span id="902">902</span>
 </pre><pre class="rust ">
 <span class="doccomment">//! Adaptive thresholding</span>
 
@@ -973,11 +972,10 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">avg_u</span> <span class="op">=</span> <span class="number">0usize</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">threshold_s</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">w</span> <span class="op">/</span> <span class="ident">THRESHOLD_S_DEN</span>;
 
-        <span class="comment">/* Ensure a sane, non-zero value for threshold_s.
-         *
-         * threshold_s can be zero if the image width is small. We need to avoid
-         * SIGFPE as it will be used as divisor.
-         * */</span>
+        <span class="comment">// Ensure a sane, non-zero value for threshold_s.</span>
+        <span class="comment">//</span>
+        <span class="comment">// threshold_s can be zero if the image width is small. We need to avoid</span>
+        <span class="comment">// SIGFPE as it will be used as divisor.</span>
         <span class="ident">threshold_s</span> <span class="op">=</span> <span class="ident">threshold_s</span>.<span class="ident">max</span>(<span class="ident">THRESHOLD_S_MIN</span>);
 
         <span class="kw">for</span> <span class="ident">y</span> <span class="kw">in</span> <span class="number">0</span>..<span class="self">self</span>.<span class="ident">h</span> {
