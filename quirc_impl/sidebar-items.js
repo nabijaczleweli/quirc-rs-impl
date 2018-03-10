@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["constants",""],["ffi",""],["ops",""]]});
+initSidebarItems({"mod":[["constants",""],["ffi",""],["ops",""],["util",""]]});

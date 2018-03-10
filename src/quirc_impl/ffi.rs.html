@@ -235,9 +235,66 @@
 <span id="189">189</span>
 <span id="190">190</span>
 <span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
 </pre><pre class="rust ">
 <span class="kw">use</span> <span class="self">self</span>::<span class="kw">super</span>::<span class="ident">constants</span>::{<span class="ident">QUIRC_MAX_PAYLOAD</span>, <span class="ident">QUIRC_MAX_BITMAP</span>};
-<span class="kw">use</span> <span class="self">self</span>::<span class="kw">super</span>::<span class="ident">ops</span>::<span class="ident">Quirc</span>;
+<span class="kw">use</span> <span class="self">self</span>::<span class="kw">super</span>::<span class="ident">ops</span>::{<span class="ident">QuircPoint</span>, <span class="ident">QuircCode</span>, <span class="ident">QuircData</span>, <span class="ident">Quirc</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">boxed</span>::<span class="ident">Box</span>;
 <span class="kw">use</span> <span class="ident">libc</span>::<span class="ident">c_int</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ptr</span>;
@@ -267,28 +324,54 @@
 
 <span class="doccomment">/// This structure describes a location in the input image buffer.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FfiQuircPoint</span> {
     <span class="kw">pub</span> <span class="ident">x</span>: <span class="ident">c_int</span>,
     <span class="kw">pub</span> <span class="ident">y</span>: <span class="ident">c_int</span>,
 }
 
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">QuircPoint</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">FfiQuircPoint</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">code</span>: <span class="ident">QuircPoint</span>) <span class="op">-&gt;</span> <span class="ident">FfiQuircPoint</span> {
+        <span class="ident">FfiQuircPoint</span> {
+            <span class="ident">x</span>: <span class="ident">code</span>.<span class="ident">x</span> <span class="kw">as</span> <span class="ident">c_int</span>,
+            <span class="ident">y</span>: <span class="ident">code</span>.<span class="ident">y</span> <span class="kw">as</span> <span class="ident">c_int</span>,
+        }
+    }
+}
+
+
 <span class="doccomment">/// This structure is used to return information about detected QR codes</span>
-<span class="doccomment">/// in the input image.</span>
+<span class="doccomment">/// in the input image — FFI.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FfiQuircCode</span> {
     <span class="doccomment">/// The four corners of the QR-code, from top left, clockwise</span>
     <span class="kw">pub</span> <span class="ident">corners</span>: [<span class="ident">FfiQuircPoint</span>; <span class="number">4</span>],
 
-    <span class="doccomment">/// The number of cells across in the QR-code. The cell bitmap</span>
-    <span class="doccomment">/// is a bitmask giving the actual values of cells. If the cell</span>
-    <span class="doccomment">/// at (x, y) is black, then the following bit is set:</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">///     cell_bitmap[i &gt;&gt; 3] &amp; (1 &lt;&lt; (i &amp; 7))</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// where i = (y * size) + x.</span>
+    <span class="doccomment">/// The number of cells across in the QR-code.</span>
     <span class="kw">pub</span> <span class="ident">size</span>: <span class="ident">c_int</span>,
+    <span class="doccomment">/// The cell bitmap is a bitmask giving the actual values of cells.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// If the cell at (x, y) is black, then the following bit is set:</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```c</span>
+    <span class="doccomment">/// cell_bitmap[i &gt;&gt; 3] &amp; (1 &lt;&lt; (i &amp; 7))</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// where `i = (y * size) + x`.</span>
     <span class="kw">pub</span> <span class="ident">cell_bitmap</span>: [<span class="ident">u8</span>; <span class="ident">QUIRC_MAX_BITMAP</span>],
 }
+
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">QuircCode</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">FfiQuircCode</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">code</span>: <span class="ident">QuircCode</span>) <span class="op">-&gt;</span> <span class="ident">FfiQuircCode</span> {
+        <span class="ident">FfiQuircCode</span> {
+            <span class="ident">corners</span>: [<span class="ident">code</span>.<span class="ident">corners</span>[<span class="number">0</span>].<span class="ident">into</span>(), <span class="ident">code</span>.<span class="ident">corners</span>[<span class="number">1</span>].<span class="ident">into</span>(), <span class="ident">code</span>.<span class="ident">corners</span>[<span class="number">2</span>].<span class="ident">into</span>(), <span class="ident">code</span>.<span class="ident">corners</span>[<span class="number">3</span>].<span class="ident">into</span>()],
+            <span class="ident">size</span>: <span class="ident">code</span>.<span class="ident">size</span> <span class="kw">as</span> <span class="ident">c_int</span>,
+            <span class="ident">cell_bitmap</span>: <span class="ident">code</span>.<span class="ident">cell_bitmap</span>,
+        }
+    }
+}
+
 
 <span class="doccomment">/// This structure holds the decoded QR-code data</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
@@ -312,10 +395,24 @@
     <span class="kw">pub</span> <span class="ident">eci</span>: <span class="ident">u32</span>,
 }
 
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">QuircData</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">FfiQuircData</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">data</span>: <span class="ident">QuircData</span>) <span class="op">-&gt;</span> <span class="ident">FfiQuircData</span> {
+        <span class="ident">FfiQuircData</span> {
+            <span class="ident">version</span>: <span class="ident">data</span>.<span class="ident">version</span> <span class="kw">as</span> <span class="ident">c_int</span>,
+            <span class="ident">ecc_level</span>: <span class="ident">data</span>.<span class="ident">ecc_level</span> <span class="kw">as</span> <span class="ident">c_int</span>,
+            <span class="ident">mask</span>: <span class="ident">data</span>.<span class="ident">mask</span> <span class="kw">as</span> <span class="ident">c_int</span>,
+            <span class="ident">data_type</span>: <span class="ident">data</span>.<span class="ident">data_type</span> <span class="kw">as</span> <span class="ident">c_int</span>,
+            <span class="ident">payload</span>: <span class="ident">data</span>.<span class="ident">payload</span>,
+            <span class="ident">payload_len</span>: <span class="ident">data</span>.<span class="ident">payload_len</span> <span class="kw">as</span> <span class="ident">c_int</span>,
+            <span class="ident">eci</span>: <span class="ident">data</span>.<span class="ident">eci</span>,
+        }
+    }
+}
+
 
 <span class="doccomment">/// This enum describes the various decoder errors which may occur.</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">Hash</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">PartialOrd</span>, <span class="ident">Ord</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">QuircDecodeError</span> {
     <span class="ident">QuircSuccess</span> <span class="op">=</span> <span class="number">0</span>,
     <span class="ident">QuircErrorInvalidGridSize</span>,
@@ -360,13 +457,9 @@
 }
 
 <span class="doccomment">/// These functions are used to process images for QR-code recognition.</span>
-<span class="doccomment">/// quirc_begin() must first be called to obtain access to a buffer into</span>
+<span class="doccomment">/// `quirc_begin()` must first be called to obtain access to a buffer into</span>
 <span class="doccomment">/// which the input image should be placed. Optionally, the current</span>
 <span class="doccomment">/// width and height may be returned.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// After filling the buffer, quirc_end() should be called to process</span>
-<span class="doccomment">/// the image for QR-code recognition. The locations and content of each</span>
-<span class="doccomment">/// code may be obtained using accessor functions described below.</span>
 <span class="attribute">#[<span class="ident">no_mangle</span>]</span>
 <span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> <span class="kw">fn</span> <span class="ident">quirc_begin</span>(<span class="ident">whom</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">FfiQuirc</span>, <span class="ident">out_w</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_int</span>, <span class="ident">out_h</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_int</span>) <span class="op">-&gt;</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u8</span> {
     <span class="kw">if</span> <span class="op">!</span><span class="ident">out_w</span>.<span class="ident">is_null</span>() <span class="op">||</span> <span class="op">!</span><span class="ident">out_h</span>.<span class="ident">is_null</span>() {
@@ -380,12 +473,15 @@
         }
     }
 
-    <span class="ident">ptr</span>::<span class="ident">null_mut</span>()
+    (<span class="kw-2">*</span>((<span class="kw-2">*</span><span class="ident">whom</span>).<span class="ident">inner</span>)).<span class="ident">begin</span>().<span class="ident">as_mut_ptr</span>()
 }
 
+<span class="doccomment">/// After filling the buffer, `quirc_end()` should be called to process</span>
+<span class="doccomment">/// the image for QR-code recognition. The locations and content of each</span>
+<span class="doccomment">/// code may be obtained using accessor functions described below.</span>
 <span class="attribute">#[<span class="ident">no_mangle</span>]</span>
-<span class="kw">pub</span> <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> <span class="kw">fn</span> <span class="ident">quirc_end</span>(<span class="ident">whom</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">FfiQuirc</span>) {
-    <span class="kw">let</span> _ <span class="op">=</span> <span class="ident">whom</span>;
+<span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> <span class="kw">fn</span> <span class="ident">quirc_end</span>(<span class="ident">whom</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">FfiQuirc</span>) {
+    (<span class="kw-2">*</span>((<span class="kw-2">*</span><span class="ident">whom</span>).<span class="ident">inner</span>)).<span class="ident">end</span>()
 }
 
 <span class="doccomment">/// Return a string error message for an error code.</span>
@@ -415,17 +511,35 @@
 <span class="doccomment">/// Extract the QR-code specified by the given index.</span>
 <span class="attribute">#[<span class="ident">no_mangle</span>]</span>
 <span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> <span class="kw">fn</span> <span class="ident">quirc_extract</span>(<span class="ident">from_whom</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">FfiQuirc</span>, <span class="ident">index</span>: <span class="ident">c_int</span>, <span class="ident">code</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">FfiQuircCode</span>) {
-    <span class="kw">let</span> _ <span class="op">=</span> <span class="ident">from_whom</span>;
-    <span class="kw">let</span> _ <span class="op">=</span> <span class="ident">index</span>;
-    <span class="kw">let</span> _ <span class="op">=</span> <span class="ident">code</span>;
+    <span class="kw">if</span> <span class="ident">index</span> <span class="op">&lt;</span> <span class="number">0</span> {
+        <span class="kw">return</span>;
+    }
+
+    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">out</span>) <span class="op">=</span> (<span class="kw-2">*</span>((<span class="kw-2">*</span><span class="ident">from_whom</span>).<span class="ident">inner</span>)).<span class="ident">extract</span>(<span class="ident">index</span> <span class="kw">as</span> <span class="ident">usize</span>) {
+        <span class="kw-2">*</span><span class="ident">code</span> <span class="op">=</span> <span class="ident">out</span>.<span class="ident">into</span>();
+    }
 }
 
 <span class="doccomment">/// Decode a QR-code, returning the payload data.</span>
 <span class="attribute">#[<span class="ident">no_mangle</span>]</span>
 <span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> <span class="kw">fn</span> <span class="ident">quirc_decode</span>(<span class="ident">code</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">FfiQuircCode</span>, <span class="ident">data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">FfiQuircData</span>) <span class="op">-&gt;</span> <span class="ident">QuircDecodeError</span> {
-    <span class="kw">let</span> _ <span class="op">=</span> <span class="ident">code</span>;
-    <span class="kw">let</span> _ <span class="op">=</span> <span class="ident">data</span>;
-    <span class="ident">QuircDecodeError</span>::<span class="ident">QuircSuccess</span>
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">out_data</span> <span class="op">=</span> <span class="ident">QuircData</span> {
+        <span class="ident">version</span>: <span class="number">0</span>,
+        <span class="ident">ecc_level</span>: <span class="number">0</span>,
+        <span class="ident">mask</span>: <span class="number">0</span>,
+
+        <span class="ident">data_type</span>: <span class="number">0</span>,
+
+        <span class="ident">payload</span>: [<span class="number">0u8</span>; <span class="ident">QUIRC_MAX_PAYLOAD</span>],
+        <span class="ident">payload_len</span>: <span class="number">0</span>,
+
+        <span class="ident">eci</span>: <span class="number">0</span>,
+    };
+
+    <span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">QuircCode</span>::<span class="ident">from</span>(<span class="kw-2">*</span><span class="ident">code</span>).<span class="ident">decode</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">out_data</span>);
+    <span class="kw-2">*</span><span class="ident">data</span> <span class="op">=</span> <span class="ident">out_data</span>.<span class="ident">into</span>();
+
+    <span class="ident">err</span>
 }
 </pre>
 </section>

@@ -49,16 +49,12 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a class='srclink' href='../../src/quirc_impl/ffi.rs.html#133-146' title='goto source code'>[src]</a></span></h1>
+               </span><a class='srclink' href='../../src/quirc_impl/ffi.rs.html#169-182' title='goto source code'>[src]</a></span></h1>
 <pre class='rust fn'><div class="docblock attributes">#[no_mangle]
 </div>pub unsafe extern &quot;C&quot; fn quirc_begin(<br>&nbsp;&nbsp;&nbsp;&nbsp;whom: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="struct" href="../../quirc_impl/ffi/struct.FfiQuirc.html" title="struct quirc_impl::ffi::FfiQuirc">FfiQuirc</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;out_w: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="type" href="../../libc/type.c_int.html" title="type libc::c_int">c_int</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;out_h: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="type" href="../../libc/type.c_int.html" title="type libc::c_int">c_int</a><br>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a></pre><div class='docblock'><p>These functions are used to process images for QR-code recognition.
-quirc_begin() must first be called to obtain access to a buffer into
+<code>quirc_begin()</code> must first be called to obtain access to a buffer into
 which the input image should be placed. Optionally, the current
 width and height may be returned.</p>
-
-<p>After filling the buffer, quirc_end() should be called to process
-the image for QR-code recognition. The locations and content of each
-code may be obtained using accessor functions described below.</p>
 </div></section>
     <section id='search' class="content hidden"></section>
 

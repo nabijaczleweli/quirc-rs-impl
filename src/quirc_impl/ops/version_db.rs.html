@@ -1091,6 +1091,8 @@
 <span id="1045">1045</span>
 <span id="1046">1046</span>
 <span id="1047">1047</span>
+<span id="1048">1048</span>
+<span id="1049">1049</span>
 </pre><pre class="rust ">
 <span class="doccomment">//! QR-code version information database</span>
 
@@ -1099,6 +1101,7 @@
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">QUIRC_MAX_ALIGNMENT</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">7</span>;
 
 
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">Hash</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">PartialOrd</span>, <span class="ident">Ord</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">QuircRsParams</span> {
     <span class="doccomment">/// Small block size</span>
     <span class="kw">pub</span> <span class="ident">bs</span>: <span class="ident">u32</span>,
@@ -1108,6 +1111,7 @@
     <span class="kw">pub</span> <span class="ident">ns</span>: <span class="ident">u32</span>,
 }
 
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">Hash</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">PartialOrd</span>, <span class="ident">Ord</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">QuircVersionInfo</span> {
     <span class="kw">pub</span> <span class="ident">data_bytes</span>: <span class="ident">u32</span>,
     <span class="kw">pub</span> <span class="ident">apat</span>: [<span class="ident">u32</span>; <span class="ident">QUIRC_MAX_ALIGNMENT</span>],

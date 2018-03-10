@@ -49,7 +49,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a class='srclink' href='../../src/quirc_impl/ffi.rs.html#1-191' title='goto source code'>[src]</a></span></h1>
+               </span><a class='srclink' href='../../src/quirc_impl/ffi.rs.html#1-248' title='goto source code'>[src]</a></span></h1>
 <h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
                        <tr class=' module-item'>
@@ -64,7 +64,7 @@
                                   title='struct quirc_impl::ffi::FfiQuircCode'>FfiQuircCode</a></td>
                            <td class='docblock-short'>
                                 <p>This structure is used to return information about detected QR codes
-in the input image.</p>
+in the input image — FFI.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -95,7 +95,7 @@ in the input image.</p>
                                   title='fn quirc_impl::ffi::quirc_begin'>quirc_begin</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
                            <td class='docblock-short'>
                                 <p>These functions are used to process images for QR-code recognition.
-quirc_begin() must first be called to obtain access to a buffer into
+<code>quirc_begin()</code> must first be called to obtain access to a buffer into
 which the input image should be placed. Optionally, the current
 width and height may be returned.</p>
                            </td>
@@ -123,9 +123,11 @@ width and height may be returned.</p>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class="fn" href="fn.quirc_end.html"
-                                  title='fn quirc_impl::ffi::quirc_end'>quirc_end</a></td>
+                                  title='fn quirc_impl::ffi::quirc_end'>quirc_end</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
                            <td class='docblock-short'>
-                                
+                                <p>After filling the buffer, <code>quirc_end()</code> should be called to process
+the image for QR-code recognition. The locations and content of each
+code may be obtained using accessor functions described below.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>

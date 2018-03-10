@@ -49,9 +49,12 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a class='srclink' href='../../src/quirc_impl/ffi.rs.html#149-151' title='goto source code'>[src]</a></span></h1>
+               </span><a class='srclink' href='../../src/quirc_impl/ffi.rs.html#188-190' title='goto source code'>[src]</a></span></h1>
 <pre class='rust fn'><div class="docblock attributes">#[no_mangle]
-</div>pub extern &quot;C&quot; fn quirc_end(whom: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="struct" href="../../quirc_impl/ffi/struct.FfiQuirc.html" title="struct quirc_impl::ffi::FfiQuirc">FfiQuirc</a>)</pre></section>
+</div>pub unsafe extern &quot;C&quot; fn quirc_end(whom: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="struct" href="../../quirc_impl/ffi/struct.FfiQuirc.html" title="struct quirc_impl::ffi::FfiQuirc">FfiQuirc</a>)</pre><div class='docblock'><p>After filling the buffer, <code>quirc_end()</code> should be called to process
+the image for QR-code recognition. The locations and content of each
+code may be obtained using accessor functions described below.</p>
+</div></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
