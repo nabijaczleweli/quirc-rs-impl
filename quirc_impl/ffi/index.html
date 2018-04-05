@@ -10,8 +10,11 @@
     <title>quirc_impl::ffi - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../../normalize.css">
-    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
-    <link rel="stylesheet" type="text/css" href="../../main.css">
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle">
+    
+    <link rel="stylesheet" type="text/css" href="../../dark.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css" id="themeStyle">
+    <script src="../../storage.js"></script>
     
 
     
@@ -33,6 +36,13 @@
         <p class='location'>Module ffi</p><div class="sidebar-elems"><div class="block items"><ul><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#functions">Functions</a></li></ul></div><p class='location'><a href='../index.html'>quirc_impl</a></p><script>window.sidebarCurrent = {name: 'ffi', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script></div>
     </nav>
 
+    <div class="theme-picker">
+        <button id="theme-picker" aria-label="Pick another theme!">
+            <img src="../../brush.svg" width="18" alt="Pick another theme!">
+        </button>
+        <div id="theme-choices"></div>
+    </div>
+    <script src="../../theme.js"></script>
     <nav class="sub">
         <form class="search-form js-only">
             <div class="search-container">
@@ -57,6 +67,7 @@
                                   title='struct quirc_impl::ffi::FfiQuirc'>FfiQuirc</a></td>
                            <td class='docblock-short'>
                                 <p>Version of <code>Quirc</code> for FFI consumption.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -65,6 +76,7 @@
                            <td class='docblock-short'>
                                 <p>This structure is used to return information about detected QR codes
 in the input image — FFI.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -72,6 +84,7 @@ in the input image — FFI.</p>
                                   title='struct quirc_impl::ffi::FfiQuircData'>FfiQuircData</a></td>
                            <td class='docblock-short'>
                                 <p>This structure holds the decoded QR-code data</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -79,6 +92,7 @@ in the input image — FFI.</p>
                                   title='struct quirc_impl::ffi::FfiQuircPoint'>FfiQuircPoint</a></td>
                            <td class='docblock-short'>
                                 <p>This structure describes a location in the input image buffer.</p>
+
                            </td>
                        </tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
 <table>
@@ -87,6 +101,7 @@ in the input image — FFI.</p>
                                   title='enum quirc_impl::ffi::QuircDecodeError'>QuircDecodeError</a></td>
                            <td class='docblock-short'>
                                 <p>This enum describes the various decoder errors which may occur.</p>
+
                            </td>
                        </tr></table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
 <table>
@@ -98,6 +113,7 @@ in the input image — FFI.</p>
 <code>quirc_begin()</code> must first be called to obtain access to a buffer into
 which the input image should be placed. Optionally, the current
 width and height may be returned.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -105,6 +121,7 @@ width and height may be returned.</p>
                                   title='fn quirc_impl::ffi::quirc_count'>quirc_count</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
                            <td class='docblock-short'>
                                 <p>Return the number of QR-codes identified in the last processed image.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -112,6 +129,7 @@ width and height may be returned.</p>
                                   title='fn quirc_impl::ffi::quirc_decode'>quirc_decode</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
                            <td class='docblock-short'>
                                 <p>Decode a QR-code, returning the payload data.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -119,6 +137,7 @@ width and height may be returned.</p>
                                   title='fn quirc_impl::ffi::quirc_destroy'>quirc_destroy</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
                            <td class='docblock-short'>
                                 <p>Destroy a QR-code recognizer.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -128,6 +147,7 @@ width and height may be returned.</p>
                                 <p>After filling the buffer, <code>quirc_end()</code> should be called to process
 the image for QR-code recognition. The locations and content of each
 code may be obtained using accessor functions described below.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -135,6 +155,7 @@ code may be obtained using accessor functions described below.</p>
                                   title='fn quirc_impl::ffi::quirc_extract'>quirc_extract</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
                            <td class='docblock-short'>
                                 <p>Extract the QR-code specified by the given index.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -142,6 +163,7 @@ code may be obtained using accessor functions described below.</p>
                                   title='fn quirc_impl::ffi::quirc_new'>quirc_new</a></td>
                            <td class='docblock-short'>
                                 <p>Construct a new QR-code recognizer.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -150,6 +172,7 @@ code may be obtained using accessor functions described below.</p>
                            <td class='docblock-short'>
                                 <p>Resize the QR-code recognizer. The size of an image must be
 specified before codes can be analyzed.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -157,6 +180,7 @@ specified before codes can be analyzed.</p>
                                   title='fn quirc_impl::ffi::quirc_strerror'>quirc_strerror</a></td>
                            <td class='docblock-short'>
                                 <p>Return a string error message for an error code.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -164,6 +188,7 @@ specified before codes can be analyzed.</p>
                                   title='fn quirc_impl::ffi::quirc_version'>quirc_version</a></td>
                            <td class='docblock-short'>
                                 <p>Obtain the library version string.</p>
+
                            </td>
                        </tr></table></section>
     <section id='search' class="content hidden"></section>
@@ -178,20 +203,22 @@ specified before codes can be analyzed.</p>
                 <h2>Keyboard Shortcuts</h2>
 
                 <dl>
-                    <dt>?</dt>
+                    <dt><kbd>?</kbd></dt>
                     <dd>Show this help dialog</dd>
-                    <dt>S</dt>
+                    <dt><kbd>S</kbd></dt>
                     <dd>Focus the search field</dd>
-                    <dt>↑</dt>
+                    <dt><kbd>↑</kbd></dt>
                     <dd>Move up in search results</dd>
-                    <dt>↓</dt>
+                    <dt><kbd>↓</kbd></dt>
                     <dd>Move down in search results</dd>
-                    <dt>↹</dt>
+                    <dt><kbd>↹</kbd></dt>
                     <dd>Switch tab</dd>
-                    <dt>&#9166;</dt>
+                    <dt><kbd>&#9166;</kbd></dt>
                     <dd>Go to active search result</dd>
-                    <dt style="width:31px;">+ / -</dt>
-                    <dd>Collapse/expand all sections</dd>
+                    <dt><kbd>+</kbd></dt>
+                    <dd>Expand all sections</dd>
+                    <dt><kbd>-</kbd></dt>
+                    <dd>Collapse all sections</dd>
                 </dl>
             </div>
 
