@@ -1,7 +1,7 @@
 [package]
 name = "quirc-impl"
 description = "Rust QR code decoder, but for real this time"
-documentation = "https://cdn.rawgit.com/nabijaczleweli/quirc-rs-impl/doc/quirc_impl/index.html"
+documentation = "https://rawcdn.githack.com/nabijaczleweli/quirc-rs-impl/doc/quirc_impl/index.html"
 repository = "https://github.com/nabijaczleweli/quirc-rs-impl"
 readme = "README.md"
 keywords = ["QR", "code", "decode"]
